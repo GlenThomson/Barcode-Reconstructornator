@@ -1,0 +1,7 @@
+- add validation loss check to the training 
+
+- add white padding to keep the orignal ratio of size 
+
+- use a pdf 147 generator to create lots of data 
+
+- add back in the occlulsiosn 
