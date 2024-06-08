@@ -67,4 +67,4 @@ def augment_and_prepare_datasets(clean_dir, aug_dir, train_input_dir, train_targ
     print(f"Total augmented images generated: {total_augmented_images}")
 
 # Example usage
-augment_and_prepare_datasets('generated_barcodes', 'augmented_images', 'train_input', 'train_target', 'val_input', 'val_target', num_augmentations=1)
+# augment_and_prepare_datasets('generated_barcodes', 'augmented_images', 'train_input', 'train_target', 'val_input', 'val_target', num_augmentations=1)

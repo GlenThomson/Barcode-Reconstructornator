@@ -40,9 +40,9 @@ def evaluate_model(model_path, input_image_path, ground_truth_image_path):
     show_images(input_image, ground_truth_image, output_image)
 
 # Path to the model and test images
-model_path = "best_barcode_reconstruction_model.pth"
-input_image_path = r"val_input\barcode_17_col_8.png"
-ground_truth_image_path = r"val_target\barcode_17_col_8.png"
+model_path = "best_barcode_reconstruction_model_experiment_1.pth"
+input_image_path = r"test_images\BARCODE5.png"
+ground_truth_image_path = r"test_images\barcode_76_col_8.png"
 
 evaluate_model(model_path, input_image_path, ground_truth_image_path)
 

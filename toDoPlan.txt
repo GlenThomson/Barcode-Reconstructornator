@@ -5,3 +5,8 @@
 - use a pdf 147 generator to create lots of data 
 
 - add back in the occlulsiosn 
+
+
+- try to implement SwinIR (Swin Transformer for Image Restoration)
+
+- generate ones at a slight angle , so the ground truth is at a angle as is should be optimised for restoring , it can be rotated after

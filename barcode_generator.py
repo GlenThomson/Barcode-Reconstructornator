@@ -6,7 +6,7 @@ from pathlib import Path
 
 def generate_pdf417_barcode(data, output_path, columns, security_level=5):
     codes = pdf417gen.encode(data, columns=columns, security_level=security_level)
-    image = pdf417gen.render_image(codes, scale=3, ratio=3, padding=5)
+    image = pdf417gen.render_image(codes, scale=3, ratio=3, padding=10)
     
     # Rotate the image to be vertical
     image = image.rotate(90, expand=True)
@@ -20,5 +20,5 @@ def generate_dataset(output_dir, num_samples=1000, columns=8, security_level=5):
 
         generate_pdf417_barcode(data, barcode_path, columns, security_level)
 
-# Generate the dataset with a fixed column value
-generate_dataset('generated_barcodes', num_samples=2000, columns=8, security_level=4)
+# # Generate the dataset with a fixed column value
+# generate_dataset('generated_barcodes', num_samples=10, columns=8, security_level=4)

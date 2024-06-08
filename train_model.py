@@ -1,4 +1,5 @@
 import os
+import json
 from pathlib import Path
 import torch
 import torch.nn as nn
@@ -34,7 +35,7 @@ class BarcodeDataset(Dataset):
         
         return input_image, target_image
 
-def train_model(num_epochs=10, batch_size=16, learning_rate=0.001):
+def train_model(run_name, num_epochs=2, batch_size=16, learning_rate=0.001):
     train_input_dir = 'train_input'
     train_target_dir = 'train_target'
     val_input_dir = 'val_input'
@@ -57,6 +58,11 @@ def train_model(num_epochs=10, batch_size=16, learning_rate=0.001):
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
     best_val_loss = float('inf')
+    training_results = {
+        'run_name': run_name,
+        'epoch_losses': [],
+        'val_losses': []
+    }
 
     for epoch in range(num_epochs):
         model.train()
@@ -88,12 +94,21 @@ def train_model(num_epochs=10, batch_size=16, learning_rate=0.001):
         val_loss /= len(val_loader)
         print(f"Epoch {epoch + 1}, Validation Loss: {val_loss:.3f}")
 
+        training_results['epoch_losses'].append(loss.item())
+        training_results['val_losses'].append(val_loss)
+
         if val_loss < best_val_loss:
             best_val_loss = val_loss
-            torch.save(model.state_dict(), "best_barcode_reconstruction_model.pth")
+            torch.save(model.state_dict(), f"best_barcode_reconstruction_model_{run_name}.pth")
 
-    torch.save(model.state_dict(), "final_barcode_reconstruction_model.pth")
+    torch.save(model.state_dict(), f"final_barcode_reconstruction_model_{run_name}.pth")
     print("Finished Training")
 
+    # Save training results to a file
+    results_file = f"{run_name}_results.json"
+    with open(results_file, 'w') as f:
+        json.dump(training_results, f, indent=4)
+    print(f"Saved training results to {results_file}")
+
 if __name__ == "__main__":
-    train_model()
+    train_model(run_name="test_run", num_epochs=2)
