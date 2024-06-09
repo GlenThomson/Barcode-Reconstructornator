@@ -30,7 +30,7 @@ def main():
     
     # Generate barcodes
     print("Generating barcodes...")
-    generate_dataset('generated_barcodes', num_samples=10000, columns=8, security_level=4)
+    generate_dataset('generated_barcodes', num_samples=100, columns=8, security_level=4)
     
     # Prepare datasets
     print("Preparing datasets...")

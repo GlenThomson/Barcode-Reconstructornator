@@ -9,10 +9,7 @@ from PIL import Image
 import json
 import matplotlib.pyplot as plt
 
-# Add the full absolute path to the SwinIR models directory to the system path
-sys.path.append(r'C:\Users\glent\SwinIR\models')
-
-from network_swinir import SwinIR
+from SwinIR.SwinIRmodels.network_swinir import SwinIR
 
 class BarcodeDataset(Dataset):
     def __init__(self, input_dir, target_dir, transform=None):
@@ -49,7 +46,7 @@ def plot_losses(train_losses, val_losses):
     plt.legend()
     plt.show()
 
-def train_model(num_epochs=2, batch_size=3, learning_rate=0.001, run_name="experiment"):
+def train_model(num_epochs=2, batch_size=2, learning_rate=0.001, run_name="experiment"):
     train_input_dir = 'train_input'
     train_target_dir = 'train_target'
     val_input_dir = 'val_input'
@@ -71,7 +68,7 @@ def train_model(num_epochs=2, batch_size=3, learning_rate=0.001, run_name="exper
                    drop_path_rate=0.1, norm_layer=torch.nn.LayerNorm, ape=False, patch_norm=True, use_checkpoint=False,
                    upscale=1, img_range=1., upsampler='', resi_connection='1conv').to(device)
     
-    criterion = nn.MSELoss()
+    criterion = nn.BCELoss()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
     best_val_loss = float('inf')

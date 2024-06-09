@@ -4,10 +4,9 @@ import sys
 from torchvision import transforms
 from PIL import Image
 
-# Add the full absolute path to the SwinIR models directory to the system path
-sys.path.append(r'C:\Users\glent\SwinIR\models')
 
-from network_swinir import SwinIR
+
+from SwinIR.SwinIRmodels.network_swinir import SwinIR
 
 def load_image(image_path, transform=None):
     image = Image.open(image_path).convert("L")
