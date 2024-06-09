@@ -1,8 +1,13 @@
 import matplotlib.pyplot as plt
 import torch
+import sys
 from torchvision import transforms
-from unet_model import UNet
 from PIL import Image
+
+# Add the full absolute path to the SwinIR models directory to the system path
+sys.path.append(r'C:\Users\glent\SwinIR\models')
+
+from network_swinir import SwinIR
 
 def load_image(image_path, transform=None):
     image = Image.open(image_path).convert("L")
@@ -22,8 +27,11 @@ def show_images(input_image, ground_truth_image, predicted_image):
 
 def evaluate_model(model_path, input_image_path, ground_truth_image_path):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = UNet(in_channels=1, out_channels=1).to(device)
-    model.load_state_dict(torch.load(model_path))
+    model = SwinIR(img_size=256, patch_size=1, in_chans=1, embed_dim=60, depths=[2, 2, 2, 2], num_heads=[2, 2, 2, 2],
+                   window_size=8, mlp_ratio=2., qkv_bias=True, qk_scale=None, drop_rate=0., attn_drop_rate=0.,
+                   drop_path_rate=0.1, norm_layer=torch.nn.LayerNorm, ape=False, patch_norm=True, use_checkpoint=False,
+                   upscale=1, img_range=1., upsampler='', resi_connection='1conv').to(device)
+    model.load_state_dict(torch.load(model_path, map_location=device))
     model.eval()
 
     transform = transforms.Compose([transforms.ToTensor()])
@@ -40,9 +48,8 @@ def evaluate_model(model_path, input_image_path, ground_truth_image_path):
     show_images(input_image, ground_truth_image, output_image)
 
 # Path to the model and test images
-model_path = "best_barcode_reconstruction_model_experiment_1.pth"
-input_image_path = r"test_images\BARCODE5.png"
+model_path = "best_model_experiment_1.pth"
+input_image_path = r"test_images\barcode_76_col_8_aug_0.png"
 ground_truth_image_path = r"test_images\barcode_76_col_8.png"
 
 evaluate_model(model_path, input_image_path, ground_truth_image_path)
-

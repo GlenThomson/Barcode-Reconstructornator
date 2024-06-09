@@ -30,7 +30,7 @@ def main():
     
     # Generate barcodes
     print("Generating barcodes...")
-    generate_dataset('generated_barcodes', num_samples=20000, columns=8, security_level=4)
+    generate_dataset('generated_barcodes', num_samples=10000, columns=8, security_level=4)
     
     # Prepare datasets
     print("Preparing datasets...")
@@ -38,7 +38,11 @@ def main():
     
     # Train model
     print("Training model...")
-    train_model(num_epochs=1,run_name=run_name)
+    train_model(num_epochs=1, run_name=run_name,batch_size=3, learning_rate=0.0002)
 
 if __name__ == "__main__":
     main()
+
+
+
+
