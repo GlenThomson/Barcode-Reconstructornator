@@ -28,7 +28,7 @@ def apply_random_shift(image, max_shift=10):
     shift_x = random.randint(-max_shift, max_shift)
     shift_y = random.randint(-max_shift, max_shift)
     matrix = np.float32([[1, 0, shift_x], [0, 1, shift_y]])
-    shifted_image = cv2.warpAffine(image, matrix, (w, h), borderMode=cv2.BORDER_CONSTANT, borderValue=255)
+    shifted_image = cv2.warpAffine(image, matrix, (w, h), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=255)
     return shifted_image
 
 def apply_transformations(image):
@@ -57,10 +57,15 @@ def generate_pdf417_barcode(data, output_path, columns, security_level=5, scale=
     width, height = image.size
     image = image.crop((100, 100, width - 85, height - 85))
     
-    # Resize the image to the desired dimensions (80 width by 640 height)
-    image = image.resize((80, 640), Image.LANCZOS)
+    # Resize the image to the desired dimensions (180 width by 1000 height)
+    image = image.resize((180, 1000), Image.LANCZOS)
     
-    # Save the image
+    # Ensure the background is white
+    image = np.array(image)
+    image[image == 255] = 255  # Set all white pixels to pure white
+    
+    # Convert back to PIL image and save
+    image = Image.fromarray(image)
     image.save(output_path)
 
 def generate_dataset(output_dir, num_samples=10, column_range=(5, 6), security_range=(3, 4), scale_range=(5, 7), padding_range=(20, 30)):
