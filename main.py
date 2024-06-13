@@ -29,7 +29,7 @@ def main():
     
     # Generate barcodes
     print("Generating barcodes...")
-    generate_dataset('generated_barcodes', num_samples=100)
+    generate_dataset('generated_barcodes', num_samples=1000)
     
     # Prepare datasets
     print("Preparing datasets...")

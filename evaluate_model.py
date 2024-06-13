@@ -23,7 +23,11 @@ def show_images(input_image, ground_truth_image, predicted_image):
 def evaluate_model(model_path, input_image_path, ground_truth_image_path):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = UNet(in_channels=1, out_channels=1).to(device)
-    model.load_state_dict(torch.load(model_path))
+    
+    # Load the checkpoint and extract the model state dict
+    checkpoint = torch.load(model_path)
+    model.load_state_dict(checkpoint['model_state_dict'])
+    
     model.eval()
 
     transform = transforms.Compose([transforms.ToTensor()])
@@ -41,7 +45,7 @@ def evaluate_model(model_path, input_image_path, ground_truth_image_path):
 
 # Path to the model and test images
 model_path = "best_barcode_reconstruction_model_experiment_1.pth"
-input_image_path = r"test_images\barcode_31_col_6_sec_3_scale_6_pad_23.png"
+input_image_path = r"test_images\BARCODE1.png"
 ground_truth_image_path = r"test_images\barcode_76_col_8.png"
 
 evaluate_model(model_path, input_image_path, ground_truth_image_path)
