@@ -34,8 +34,9 @@ class BarcodeDataset(Dataset):
             target_image = self.transform(target_image)
         
         return input_image, target_image
+    
 
-def train_model(run_name, num_epochs=2, batch_size=16, learning_rate=0.001):
+def train_model(run_name, num_epochs=2, batch_size=16, learning_rate=0.001, checkpoint_path=None):
     train_input_dir = 'train_input'
     train_target_dir = 'train_target'
     val_input_dir = 'val_input'
@@ -57,6 +58,7 @@ def train_model(run_name, num_epochs=2, batch_size=16, learning_rate=0.001):
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
+    start_epoch = 0
     best_val_loss = float('inf')
     training_results = {
         'run_name': run_name,
@@ -64,7 +66,20 @@ def train_model(run_name, num_epochs=2, batch_size=16, learning_rate=0.001):
         'val_losses': []
     }
 
-    for epoch in range(num_epochs):
+    if checkpoint_path and os.path.exists(checkpoint_path):
+        checkpoint = torch.load(checkpoint_path)
+        if 'model_state_dict' in checkpoint and 'optimizer_state_dict' in checkpoint:
+            model.load_state_dict(checkpoint['model_state_dict'])
+            optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+            start_epoch = checkpoint['epoch'] + 1
+            best_val_loss = checkpoint['best_val_loss']
+            print(f"Loaded checkpoint from {checkpoint_path}, starting at epoch {start_epoch}")
+        else:
+            print(f"Checkpoint file {checkpoint_path} is missing required keys, starting training from scratch.")
+    else:
+        print(f"No checkpoint found at {checkpoint_path}, starting training from scratch.")
+
+    for epoch in range(start_epoch, start_epoch + num_epochs):
         model.train()
         running_loss = 0.0
         for i, (inputs, targets) in enumerate(train_loader):
@@ -99,9 +114,21 @@ def train_model(run_name, num_epochs=2, batch_size=16, learning_rate=0.001):
 
         if val_loss < best_val_loss:
             best_val_loss = val_loss
-            torch.save(model.state_dict(), f"best_barcode_reconstruction_model_{run_name}.pth")
+            torch.save({
+                'epoch': epoch,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'best_val_loss': best_val_loss
+            }, f"best_barcode_reconstruction_model_{run_name}.pth")
 
-    torch.save(model.state_dict(), f"final_barcode_reconstruction_model_{run_name}.pth")
+    # Ensure the last epoch variable is defined for final checkpoint saving
+    final_epoch = epoch if 'epoch' in locals() else start_epoch + num_epochs - 1
+    torch.save({
+        'epoch': final_epoch,
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'best_val_loss': best_val_loss
+    }, f"final_barcode_reconstruction_model_{run_name}.pth")
     print("Finished Training")
 
     # Save training results to a file
@@ -109,6 +136,3 @@ def train_model(run_name, num_epochs=2, batch_size=16, learning_rate=0.001):
     with open(results_file, 'w') as f:
         json.dump(training_results, f, indent=4)
     print(f"Saved training results to {results_file}")
-
-if __name__ == "__main__":
-    train_model(run_name="test_run", num_epochs=2)

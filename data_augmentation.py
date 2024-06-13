@@ -91,14 +91,20 @@ def add_random_text(image, num_texts=1):
     
     return np.array(pil_image)
 
-def change_background_color(image, intensity_range=(150, 200)):
+def change_background_color(image, intensity_range=(100, 200)):
     background_intensity = random.randint(*intensity_range)
-    image = np.where(image == 255, background_intensity, image)
+    image[image == 255] = background_intensity
     return image
 
+def apply_random_transparency(image, max_transparency=0.5):
+    alpha = random.uniform(0, max_transparency)
+    transparent_image = image * (1 - alpha) + 255 * alpha
+    return transparent_image.astype(np.uint8)
+
 def apply_random_transformations(image):
+    # Apply background color change first
     image = change_background_color(image)
-    transformations = [apply_random_noise, apply_random_blur, apply_random_shading, apply_random_occlusion, add_random_text, apply_random_glare]
+    transformations = [apply_random_noise, apply_random_blur, apply_random_shading, apply_random_occlusion, add_random_text, apply_random_glare, apply_random_transparency]
     random.shuffle(transformations)
     for transform in transformations:
         image = transform(image)
